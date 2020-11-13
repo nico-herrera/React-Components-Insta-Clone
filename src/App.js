@@ -9,8 +9,8 @@ import React, { useState } from "react";
 // Import the Posts (plural!) and SearchBar components, since they are used inside App component
 // Import the dummyData
 import "./App.css";
-import Posts from "./components/Posts";
-import SearchBar from "./components/SearchBar";
+import Posts from "./components/Posts/Posts";
+import SearchBar from "./components/SearchBar/SearchBar";
 import dummyData from "./dummy-data";
 
 const App = () => {
@@ -19,6 +19,7 @@ const App = () => {
   // To make the search bar work (which is stretch) we'd need another state to hold the search term.
 
   const [posts, setPosts] = useState(dummyData);
+  const [filteredPosts, setFilteredPosts] = useState([]);
 
   const likePost = (postId) => {
     /*
@@ -34,21 +35,36 @@ const App = () => {
      */
 
     setPosts(
-      posts.map((id) => {
-        if (id === postId) {
-          return [...posts];
+      posts.map((post) => {
+        if (post.id === postId) {
+          post.likes += 1;
+          return post;
         } else {
-          return posts.id;
+          return post;
         }
       })
     );
   };
 
+  const filterPosts = (letter) => {
+    console.log(letter.target.value);
+    setFilteredPosts(
+      posts.filter((post) => {
+        if (post.username.includes(letter.target.value)) {
+          return post;
+        }
+      })
+    );
+  };
+  console.log(filteredPosts);
   return (
     <div className="App">
       {/* Add SearchBar and Posts here to render them */}
-      <SearchBar />
-      <Posts />
+      <SearchBar filterPosts={filterPosts} />
+      <Posts
+        postProp={filteredPosts.length > 0 ? filteredPosts : posts}
+        likePost={likePost}
+      />
       {/* Check the implementation of each component, to see what props they require, if any! */}
     </div>
   );
